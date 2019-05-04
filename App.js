@@ -36,13 +36,12 @@ export default class App extends Component<Props> {
     render() {
 
       const {currentScreen} = this.state;
-      let mainScreen=currentScreen==='StartScreen' ? <StartScreen/>:<Login/>;
+      let mainScreen=currentScreen==='StartScreen' ? <StartScreen/>:<AppStack/>;
       return mainScreen
    // <AppStack/>
     }
 }
 const AppStackNavigator= createStackNavigator({
-  StartScreen:StartScreen,
   Login:Login,
   SignUpScreen:SignupScreen,
   Home:HomeScreen,

@@ -56,15 +56,15 @@ class PreferenceScreen extends Component<Props> {
         const onPressLearnMore =()=>{
 
             console.log("enter");
-            fetch('http://35.238.205.249/newapp/preferences', {
-                method: 'POST',
+            fetch('http://35.238.205.249/newapp/retUPref', {
+                method: 'GET',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     id: "t.thivya@hotmail.com",
-                    pref:this.state.data
+
                 }),
             }).then((response) => response.json())
                 .then((responseJson) => {

@@ -8,10 +8,11 @@ import {
     ImageBackground,
     TextInput,
     Dimensions,
-    Button
+    Button,Alert
 } from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons'
 import HomeScreen from "./HomeScreen";
+
 
 const { width: WIDTH } = Dimensions.get('window')
 
@@ -21,11 +22,12 @@ const { width: WIDTH } = Dimensions.get('window')
         this.state={name:'',
             email:'',
             mobile:'',
-            Password:'',
+            password:'',
+            password2:'',
             result:''
         }
     }
-    
+
     render() {
         return (
             <ImageBackground
@@ -44,61 +46,75 @@ const { width: WIDTH } = Dimensions.get('window')
                     placeholderTextColor={'rgba(255, 255, 255, 0.7)'}
                     underlineColorAndroid='transparent'
                     onChangeText={(name) => this.setState({ name })}
-                    value={this.state.name}/>
+                    value={this.state.name}
+                    returnKeyType='next'
+                    onSubmitEditing={() => { this.mailInput.focus(); }}/>
 
-            
+
 
               <Icon name={'ios-mail'} size={25} color={'rgba(255, 255, 255, 0.7)'}
                     style={styles.mailIcon} />
 
                 <TextInput
+                    ref={(input) => { this.mailInput = input; }}
                     style={styles.mailInput}
                     placeholder={"Email"}
                     placeholderTextColor={'rgba(255, 255, 255, 0.7)'}
                     underlineColorAndroid='transparent'
                     keyboardType='email-address'
-                    onChangeText={(mail) => this.setState({ mail })}
-                    value={this.state.mail}/>
+                    onChangeText={(email) => this.setState({ email })}
+                    value={this.state.email}
+                    returnKeyType='next'
+                    onSubmitEditing={() => { this.mobileInput.focus(); }} />
 
 <Icon name={'ios-call'} size={25} color={'rgba(255, 255, 255, 0.7)'}
                     style={styles.callIcon} />
 
                 <TextInput
+                    ref={(input) => { this.mobileInput = input; }}
                     style={styles.callInput}
                     placeholder={"Mobile Number"}
                     placeholderTextColor={'rgba(255, 255, 255, 0.7)'}
                     underlineColorAndroid='transparent'
                     keyboardType='number-pad'
                     onChangeText={(mobile) => this.setState({ mobile })}
-                    value={this.state.mobile}/>
+                    value={this.state.mobile}
+                    returnKeyType='next'
+                    onSubmitEditing={() => { this.passwordInput.focus(); }} />
 
-<Icon name={'ios-lock'} size={25} color={'rgba(255, 255, 255, 0.7)'}
-                    style={styles.lockIcon} />
+                <Icon name={'ios-lock'} size={25} color={'rgba(255, 255, 255, 0.7)'}
+                      style={styles.lockIcon} />
 
                 <TextInput
+                    ref={(input) => { this.passwordInput = input; }}
                     style={styles.lockInput}
                     placeholder={"Password"}
                     placeholderTextColor={'rgba(255, 255, 255, 0.7)'}
                     underlineColorAndroid='transparent'
                     secureTextEntry={true}
                     onChangeText={(password) => this.setState({ password })}
-                    value={this.state.password}/>
+                    value={this.state.password}
+                    returnKeyType='next'
+                    onSubmitEditing={() => { this.reEnterPasswordInput.focus(); }} />
 
-                    <Text style={styles.hint}>Password must be 8 characters</Text>
+                <Text style={styles.hint}>Password must be 8 characters</Text>
 
-<Icon name={'ios-lock'} size={25} color={'rgba(255, 255, 255, 0.7)'}
-                    style={styles.relockIcon} />
+                <Icon name={'ios-lock'} size={25} color={'rgba(255, 255, 255, 0.7)'}
+                      style={styles.relockIcon} />
 
                 <TextInput
+                    ref={(input) => { this.reEnterPasswordInput = input; }}
                     style={styles.relockInput}
                     placeholder={"Re-Enter Password"}
                     placeholderTextColor={'rgba(255, 255, 255, 0.7)'}
                     underlineColorAndroid='transparent'
-                    secureTextEntry={true}/>
+                    secureTextEntry={true}
+                    onChangeText={(password2) => this.setState({ password2 })}
+                    value={this.state.password2}/>
 
                 <TouchableOpacity style={styles.signupButton}
-                onPress={this._postData}>
-                    <Text  onPress={() => this.props.navigation.navigate('Home')} style={styles.signupText}>Signup</Text>
+                                  onPress={this._postData}>
+                    <Text style={styles.signupText} onPress={this._postData} style={styles.signupText}>Signup</Text>
                 </TouchableOpacity>
 
                 <Text>{this.state.result}</Text>
@@ -106,28 +122,64 @@ const { width: WIDTH } = Dimensions.get('window')
         )
     }
 
-    _postData = async () => {
-        
-        fetch('http://35.238.205.249/newapp/registration',{
-            method: 'POST',
-            body: JSON.stringify({
-                first:this.state.name,
-                second:this.state.mail,
-                third:this.state.mobile,
-                fourth:this.state.Password
-            })
-        }).then(response => response.json())
-        .then((responseJson)=> {
-            this.setState({
-                result: responseJson
-            })
-        })
-    }
+     _postData = async () => {
+
+         if (this.state.name.trim()!=='' || this.state.email!==''|| this.state.mobile.trim()!==''||this.state.Password!==''){
+             if (this.state.password===this.state.password2) {
+                 console.log("ENTERRRRRRRRRRRRRRss")
+                 console.log(this.state.email)
+                 console.log(this.state.mobile)
+                 console.log(this.state.Password)
+                 let formData = new FormData();
+                 formData.append('name', this.state.name);
+                 formData.append('email', this.state.email);
+                 formData.append('mobile', this.state.mobile);
+                 formData.append('password', this.state.password);
+
+                 fetch('http://35.238.205.249/newapp/registration', {
+                     method: 'POST',
+                     body: formData
+                 }).then((response) => response.json())
+                     .then((responseJson) => {
+                         this.setState({result: responseJson.status})
+                         console.log(responseJson)
+                         console.log("S_"+responseJson.status)
+
+                     })
+                 console.log("----->"+this.state.result)
+                 console.log("hi"+this.state.result)
+             }
+             else{
+                 Alert.alert("Password does not match")
+                /* ToastAndroid.showWithGravity(
+                     'Password does not match',
+                     ToastAndroid.SHORT,
+                 );*/
+             }
 
 
-    
-}
+             if(this.state.result=="success"){
+                 Alert.alert("User already registered")
 
+             }else{
+
+                 this.props.navigation.navigate('PreferenceScreen')
+                /* ToastAndroid.showWithGravity(
+                     'User already registered',
+                     ToastAndroid.SHORT,
+                 );*/
+             }
+
+
+
+         }else{
+
+             Alert.alert("Please Fill All Fields")
+
+
+
+         }}
+ }
 export default SignUpScreen;
 const styles = StyleSheet.create({
     container: {
@@ -264,8 +316,7 @@ const styles = StyleSheet.create({
         color:'#FFFFFF',
         fontSize:24,
         fontWeight:'bold'
-    
+
     }
 
 })
- 
