@@ -1,8 +1,19 @@
 import React, {Component} from 'react';
-import {Platform, StyleSheet,AppRegistry, Button , ImageBackground,TouchableOpacity, Text, View,Alert} from 'react-native';
+import {
+    Platform,
+    StyleSheet,
+    AppRegistry,
+    Button,
+    ImageBackground,
+    TouchableOpacity,
+    Text,
+    View,
+    Alert,
+    ActivityIndicator
+} from 'react-native';
 import { Divider, Header, Icon, Image, Rating} from 'react-native-elements';
 import DraggableFlatList from 'react-native-draggable-flatlist'
-import SignUpScreen from "./SignUpScreen";
+
 
 
 const instructions = Platform.select({
@@ -21,8 +32,8 @@ class PreferenceScreen extends Component<Props> {
               backgroundColor: `rgb(${Math.floor(Math.random() * 255)}, ${index * 5}, ${132})`,
           }))*/
 
-        data:["Cost","Location","Hospitals nearby","Nearby Schools","Nearby Supermarket","Close to Working Place"],
-
+        data:[],
+        userID:"",
 
         dataSource2:[]
     }
@@ -50,21 +61,53 @@ class PreferenceScreen extends Component<Props> {
     }
 
 
+    componentWillMount(): void {
+        console.log("enter");
+        this.state.userID=this.props.navigation.state.params.userId;
+        console.log("prefId"+this.state.userID);
+        fetch('http://35.238.205.249/newapp/retUPref/'+this.state.userID, {
+            method: 'GET'
+        }).then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({
+                    loading: false,
+                    data: responseJson.pref
+                })
+                console.log(responseJson);
+                console.log(JSON.stringify({
+
+                        pref:this.state.data
+                    })
+                )
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+
+    }
 
     render() {
-
+        if (this.state.loading) {
+            return (
+                <ActivityIndicator
+                    animating={true}
+                    style={styles.indicator}
+                    size="large"
+                />
+            );
+        }
         const onPressLearnMore =()=>{
 
             console.log("enter");
-            fetch('http://35.238.205.249/newapp/retUPref', {
-                method: 'GET',
+            fetch('http://35.238.205.249/newapp/preferences', {
+                method: 'POST',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    id: "t.thivya@hotmail.com",
-
+                    id: this.state.userID,
+                    pref:this.state.data
                 }),
             }).then((response) => response.json())
                 .then((responseJson) => {
@@ -72,48 +115,28 @@ class PreferenceScreen extends Component<Props> {
                         loading: false,
                         data: responseJson.pref
                     })
-                    console.log(responseJson);
-                    console.log(JSON.stringify({
-                            id: "t.thivya@hotmail.com",
-                            pref:this.state.data
-                        })
-                    )
+
                 })
                 .catch((error) => {
                     console.error(error);
                 });
 
-            Alert.alert('DATA SENT',this.state.data[0])
-            this.props.navigation.navigate('Login')
+            this.props.navigation.navigate('Home')
         }
 
 
-        const onPress =()=>{
-
-            fetch("http://35.238.205.249/newapp/preferences")
-                .then(response => response.json())
-                .then((responseJson)=> {
-                    this.setState({
-                        loading: false,
-                        data: responseJson.pref
-                    })
-                    console.log("pred"+responseJson.pref)
-                })
-                .catch(error=>console.log(error));
-            //Alert.alert('DATA RECIEVED'+this.state.data[0]+"rec"+this.state.dataSource2[0])
-
-
-        }
         return (
+
+
             <View  style={styles.container}>
 
                 <View>
 
                     <TouchableOpacity
                         style={styles.button2}
-                        onPress={() => this.props.navigation.navigate('Login')}
+                        onPress={() => this.props.navigation.navigate('Home')}
                     >
-                        <Text onPress={() => this.props.navigation.navigate('Login')} style={{color:'white',fontWeight: 'bold'}}> SKIP </Text>
+                        <Text /*onPress={() => this.props.navigation.navigate('Login')} */style={{color:'white',fontWeight: 'bold'}}> SKIP </Text>
                     </TouchableOpacity>
                 </View>
 

@@ -12,11 +12,12 @@ import {
   createStackNavigator,
   createAppContainer
 } from 'react-navigation';
-import Login from './screens/Login'
+import Login from './screens/LoginScreen'
 import SignupScreen from './screens/SignUpScreen'
 import HomeScreen from "./screens/HomeScreen";
 import StartScreen from "./screens/Start"
 import PreferenceScreen from "./screens/PreferenceScreen"
+import PreferenceScreen2 from "./screens/PreferenceScreen2"
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android:
@@ -31,7 +32,7 @@ export default class App extends Component<Props> {
     this.state = {currentScreen: 'StartScreen'};
     setTimeout(() => {
       this.setState({currentScreen: 'Login'})
-    }, 9000);
+    }, 5000);
   }
     render() {
 
@@ -45,7 +46,8 @@ const AppStackNavigator= createStackNavigator({
   Login:Login,
   SignUpScreen:SignupScreen,
   Home:HomeScreen,
-PreferenceScreen:PreferenceScreen
+PreferenceScreen:PreferenceScreen,
+  Preference:PreferenceScreen2
 },{
   defaultNavigationOptions: {
     header: null

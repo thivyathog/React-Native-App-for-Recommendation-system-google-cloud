@@ -1,5 +1,17 @@
 import React, { Component } from 'react'
-import {StyleSheet,Alert,TouchableHighlight, TouchableOpacity, Text, Image, ImageBackground, TextInput, Dimensions, Button} from 'react-native'
+import {
+    StyleSheet,
+    Alert,
+    TouchableHighlight,
+    TouchableOpacity,
+    Text,
+    Image,
+    ImageBackground,
+    TextInput,
+    Dimensions,
+    Button,
+    Animated
+} from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons'
 import SignUpScreen from "./SignUpScreen";
 
@@ -10,6 +22,7 @@ const { width: WIDTH } = Dimensions.get('window')
     constructor(){
         super();
         this.state = {
+            email:'',
             showPass: true,
             press: false,
             password:'',
@@ -67,7 +80,8 @@ const { width: WIDTH } = Dimensions.get('window')
                         <Icon name={this.state.press === false ? 'ios-eye-outline' : 'ios-eye-off-outline' } size={26} color={'rgba(255, 255, 255, 0.7)'}/>
                     </TouchableOpacity>
 
-    <TouchableOpacity onPress={this._postData}style={styles.loginButton} >
+    <TouchableOpacity onPress={() => this.props.navigation.navigate('Home',{ userId:this.state.email })}
+    style={styles.loginButton} >
                         <Text  style={styles.loginText}>Login</Text>
                     </TouchableOpacity>
 
@@ -85,6 +99,7 @@ const { width: WIDTH } = Dimensions.get('window')
 
      _postData = async () => {
          if (this.state.email!='' && this.state.password!=''){
+             console.log("ENTER LOGIN")
              let formData = new FormData();
              formData.append('email', this.state.email);
              formData.append('password', this.state.password);
@@ -95,6 +110,7 @@ const { width: WIDTH } = Dimensions.get('window')
              }).then((response) => response.json())
                  .then((responseJson) => {
                      this.setState({ result: JSON.stringify(responseJson) })
+                     console.log(responseJson)
                  })
 
              if(this.state.result=="{\"status\":\"mwrong\"}"){
@@ -103,15 +119,15 @@ const { width: WIDTH } = Dimensions.get('window')
                      'Incorrect Email Address',
                      ToastAndroid.SHORT,*/
                  /*);*/
-             }else if (this.state.result=="{\"status\":\"success\"}"){
+             }else if (this.state.result=="{\"status\":\"pwrong\"}"){
                  Alert.alert("Incorrect Password")
                 /* ToastAndroid.showWithGravity(
                      'Incorrect Password',
                      ToastAndroid.SHORT,
                  );*/
-             }else{
+             }else if(this.state.result=="{\"status\":\"pwrong\"}"){
                  Alert("enter here")
-                 this.props.navigation.navigate('Home')
+                 this.props.navigation.navigate('Home',{ userId:this.state.email })
              }
 
 
@@ -120,6 +136,7 @@ const { width: WIDTH } = Dimensions.get('window')
          }else{
              Alert("please fill all fields");
          }
+
      }}
 export default Login;
 const styles = StyleSheet.create({
